@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Matin Real Estate — Recruiting Roleplay Trainer</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f5;color:#111;min-height:100vh;}
+
+.header{background:#0a0a0a;padding:16px 32px;display:flex;align-items:center;justify-content:space-between;}
+.logo-wrap{display:flex;align-items:center;gap:12px;}
+.logo-svg{width:40px;height:40px;}
+.logo-text{color:#fff;}
+.logo-text .brand{font-size:22px;font-weight:700;letter-spacing:5px;color:#fff;}
+.logo-text .sub{font-size:10px;letter-spacing:5px;color:#aaa;margin-top:2px;}
+.tagline{font-size:11px;color:#888;letter-spacing:1px;text-transform:uppercase;}
+
+.screen{display:none;max-width:620px;margin:0 auto;padding:32px 16px;}
+.screen.active{display:block;}
+
+.setup-title{font-size:24px;font-weight:700;margin-bottom:6px;color:#111;}
+.setup-sub{font-size:14px;color:#666;margin-bottom:28px;line-height:1.6;}
+
+.field{margin-bottom:18px;}
+.field label{display:block;font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;margin-bottom:7px;}
+.field select{width:100%;padding:11px 14px;border:1.5px solid #ddd;border-radius:8px;font-size:14px;background:#fff;color:#111;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23666' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;}
+.field select:focus{outline:none;border-color:#0a0a0a;}
+
+.btn-primary{width:100%;padding:14px;background:#0a0a0a;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:600;letter-spacing:0.5px;cursor:pointer;transition:background 0.2s;}
+.btn-primary:hover{background:#333;}
+.btn-secondary{padding:10px 20px;background:#fff;color:#111;border:1.5px solid #ddd;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s;}
+.btn-secondary:hover{border-color:#aaa;background:#f8f8f8;}
+.btn-green{background:#2e7d32;color:#fff;border:none;border-radius:8px;padding:12px 24px;font-size:14px;font-weight:600;cursor:pointer;}
+.btn-green:hover{background:#1b5e20;}
+
+.call-screen{background:#fff;border-radius:16px;border:1px solid #e0e0e0;overflow:hidden;}
+.call-header{background:#0a0a0a;padding:20px 24px;text-align:center;}
+.call-status{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#888;margin-bottom:8px;}
+.call-timer{font-size:28px;font-weight:300;color:#fff;letter-spacing:2px;}
+
+.agent-panel{padding:24px;text-align:center;border-bottom:1px solid #f0f0f0;}
+.agent-avatar{width:72px;height:72px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;margin:0 auto 12px;color:#fff;}
+.av-dark{background:#0a0a0a;}
+.av-green{background:#2e7d32;}
+.av-blue{background:#1a237e;}
+.av-gray{background:#555;}
+.av-teal{background:#00695c;}
+.agent-name{font-size:18px;font-weight:700;color:#111;}
+.agent-broker{font-size:13px;color:#666;margin-top:3px;}
+.agent-detail{font-size:12px;color:#999;margin-top:2px;}
+
+.stage-section{padding:16px 24px;border-bottom:1px solid #f0f0f0;}
+.stage-track{display:flex;gap:4px;margin-bottom:8px;}
+.stage-dot{flex:1;height:4px;border-radius:2px;background:#e0e0e0;transition:background 0.3s;}
+.stage-dot.done{background:#2e7d32;}
+.stage-dot.active{background:#0a0a0a;}
+.stage-info{display:flex;justify-content:space-between;align-items:center;}
+.stage-label{font-size:11px;color:#999;text-transform:uppercase;letter-spacing:1px;}
+.stage-name{font-size:13px;font-weight:600;color:#111;}
+
+.voice-area{padding:24px;text-align:center;}
+.mic-ring{width:80px;height:80px;border-radius:50%;border:2px solid #e0e0e0;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;transition:all 0.3s;}
+.mic-ring.listening{border-color:#0a0a0a;border-width:3px;}
+.mic-ring.speaking{border-color:#2e7d32;border-width:3px;}
+.mic-ring.processing{border-color:#e6a817;border-width:3px;}
+.mic-icon{font-size:32px;}
+.voice-status{font-size:13px;color:#666;margin-bottom:4px;}
+.voice-hint{font-size:11px;color:#aaa;}
+
+.live-text{background:#f8f8f8;border-radius:8px;padding:12px 16px;margin:12px 0;min-height:48px;font-size:13px;color:#444;line-height:1.6;text-align:left;}
+.live-label{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#aaa;margin-bottom:4px;}
+
+.call-actions{padding:16px 24px;display:flex;gap:10px;justify-content:center;}
+.end-btn{padding:10px 28px;background:#c62828;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;}
+.end-btn:hover{background:#b71c1c;}
+.feedback-btn{padding:10px 20px;background:#fff;color:#111;border:1.5px solid #ddd;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;}
+.feedback-btn:hover{background:#f5f5f5;}
+
+.transcript-screen .ts-header{background:#0a0a0a;padding:20px 24px;border-radius:12px 12px 0 0;}
+.transcript-screen .ts-header h2{color:#fff;font-size:18px;font-weight:700;}
+.transcript-screen .ts-header p{color:#aaa;font-size:12px;margin-top:4px;}
+.transcript-box{background:#fff;border:1px solid #e0e0e0;border-top:none;border-radius:0 0 12px 12px;max-height:320px;overflow-y:auto;padding:16px;}
+.t-msg{margin-bottom:14px;}
+.t-role{font-size:10px;text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-bottom:3px;}
+.t-role.recruiter{color:#1a237e;}
+.t-role.agent{color:#2e7d32;}
+.t-text{font-size:13px;color:#333;line-height:1.6;}
+
+.feedback-screen .fb-header{background:#0a0a0a;padding:20px 24px;border-radius:12px 12px 0 0;}
+.feedback-screen .fb-header h2{color:#fff;font-size:18px;font-weight:700;}
+.feedback-screen .fb-header p{color:#aaa;font-size:12px;margin-top:4px;}
+.fb-body{background:#fff;border:1px solid #e0e0e0;border-top:none;border-radius:0 0 12px 12px;padding:20px;}
+
+.rise-item{display:grid;grid-template-columns:56px 1fr;gap:12px;margin-bottom:14px;align-items:start;}
+.rise-badge{text-align:center;padding:6px 4px;border-radius:8px;font-size:11px;font-weight:700;}
+.rb-r{background:#e3f2fd;color:#0d47a1;}
+.rb-i{background:#e8f5e9;color:#1b5e20;}
+.rb-s{background:#fff8e1;color:#e65100;}
+.rb-e{background:#f3e5f5;color:#4a148c;}
+.rise-text{font-size:13px;color:#333;line-height:1.6;padding-top:4px;}
+
+.score-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:16px 0;}
+.score-card{background:#f5f5f5;border-radius:8px;padding:12px;text-align:center;}
+.score-num{font-size:22px;font-weight:700;color:#111;}
+.score-lbl{font-size:11px;color:#888;margin-top:2px;}
+
+.actions-row{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;}
+
+.permission-notice{background:#fff8e1;border:1px solid #ffe082;border-radius:8px;padding:14px;margin-bottom:20px;font-size:13px;color:#5d4037;line-height:1.6;}
+
+.speaking-wave{display:flex;gap:3px;align-items:center;justify-content:center;height:24px;}
+.wave-bar{width:4px;background:#2e7d32;border-radius:2px;animation:wave 1s infinite ease-in-out;}
+.wave-bar:nth-child(2){animation-delay:0.1s;}
+.wave-bar:nth-child(3){animation-delay:0.2s;}
+.wave-bar:nth-child(4){animation-delay:0.3s;}
+.wave-bar:nth-child(5){animation-delay:0.4s;}
+@keyframes wave{0%,100%{height:4px}50%{height:20px}}
+
+.pulse{animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo-wrap">
+    <div class="logo-text">
+      <div class="brand">MATIN</div>
+      <div class="sub">REAL ESTATE</div>
+    </div>
+  </div>
+  <div class="tagline">Luxury Service. Exceptional Results.</div>
+</div>
+
+<div id="screen-setup" class="screen active">
+  <div style="margin-top:8px;">
+    <div class="setup-title">Recruiting roleplay trainer</div>
+    <div class="setup-sub">Practice live recruiting calls with an AI agent. Speak naturally — the agent listens, responds, and you'll receive RISE model feedback after the call.</div>
+
+    <div class="permission-notice">
+      <strong>Microphone required.</strong> This trainer uses your microphone for hands-free voice calls. When prompted, click "Allow" to enable it. Works best in Chrome or Edge.
+    </div>
+
+    <div class="field">
+      <label>Agent type</label>
+      <select id="sel-type">
+        <option value="independent">Independent agent</option>
+        <option value="team">Team agent</option>
+        <option value="new">New licensee</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Difficulty</label>
+      <select id="sel-diff">
+        <option value="warm">Warm — receptive and open</option>
+        <option value="neutral">Neutral — cautiously curious</option>
+        <option value="cold">Cold — skeptical and resistant</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Your name (recruiter)</label>
+      <input type="text" id="recruiter-name" placeholder="e.g. Jordan" style="width:100%;padding:11px 14px;border:1.5px solid #ddd;border-radius:8px;font-size:14px;color:#111;" value="">
+    </div>
+    <button class="btn-primary" onclick="startCall()">Start recruiting call</button>
+  </div>
+</div>
+
+<div id="screen-call" class="screen">
+  <div class="call-screen">
+    <div class="call-header">
+      <div class="call-status" id="call-status-label">Connecting...</div>
+      <div class="call-timer" id="call-timer">0:00</div>
+    </div>
+
+    <div class="agent-panel">
+      <div class="agent-avatar" id="call-avatar"></div>
+      <div class="agent-name" id="call-name"></div>
+      <div class="agent-broker" id="call-broker"></div>
+      <div class="agent-detail" id="call-detail"></div>
+    </div>
+
+    <div class="stage-section">
+      <div class="stage-track">
+        <div class="stage-dot" id="sd0"></div>
+        <div class="stage-dot" id="sd1"></div>
+        <div class="stage-dot" id="sd2"></div>
+        <div class="stage-dot" id="sd3"></div>
+        <div class="stage-dot" id="sd4"></div>
+        <div class="stage-dot" id="sd5"></div>
+      </div>
+      <div class="stage-info">
+        <span class="stage-label">Stage</span>
+        <span class="stage-name" id="stage-name-display">Intro</span>
+      </div>
+    </div>
+
+    <div class="voice-area">
+      <div class="mic-ring" id="mic-ring">
+        <span class="mic-icon">🎙</span>
+      </div>
+      <div class="voice-status" id="voice-status">Initializing microphone...</div>
+      <div class="voice-hint" id="voice-hint">Speak naturally — silence triggers the agent's response</div>
+
+      <div id="speaking-anim" style="display:none;margin:8px 0;">
+        <div class="speaking-wave">
+          <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+        </div>
+        <div style="font-size:12px;color:#2e7d32;margin-top:6px;" id="agent-speaking-name"></div>
+      </div>
+
+      <div>
+        <div class="live-label">You said</div>
+        <div class="live-text" id="live-you"></div>
+      </div>
+      <div style="margin-top:8px;">
+        <div class="live-label" id="agent-said-label">Agent response</div>
+        <div class="live-text" id="live-agent"></div>
+      </div>
+    </div>
+
+    <div class="call-actions">
+      <button class="feedback-btn" onclick="endCallManual()">End call</button>
+    </div>
+  </div>
+</div>
+
+<div id="screen-transcript" class="screen transcript-screen">
+  <div style="border-radius:12px;border:1px solid #e0e0e0;overflow:hidden;margin-bottom:20px;">
+    <div class="ts-header">
+      <h2>Call transcript</h2>
+      <p id="ts-meta"></p>
+    </div>
+    <div class="transcript-box" id="transcript-box"></div>
+  </div>
+  <div class="actions-row">
+    <button class="btn-primary" style="flex:1;" onclick="showFeedbackScreen()">View RISE feedback</button>
+    <button class="btn-secondary" onclick="resetToSetup()">New call</button>
+  </div>
+</div>
+
+<div id="screen-feedback" class="screen feedback-screen">
+  <div style="border-radius:12px;border:1px solid #e0e0e0;overflow:hidden;margin-bottom:20px;">
+    <div class="fb-header">
+      <h2>RISE feedback</h2>
+      <p id="fb-meta"></p>
+    </div>
+    <div class="fb-body">
+      <div id="rise-content"></div>
+      <div class="score-grid" id="score-grid"></div>
+      <div style="font-size:12px;color:#999;margin-top:8px;" id="fb-stage-note"></div>
+    </div>
+  </div>
+  <div class="actions-row">
+    <button class="btn-primary" style="flex:1;" onclick="resetToSetup()">New call</button>
+    <button class="btn-secondary" onclick="showTranscriptFromFeedback()">Back to transcript</button>
+    <button class="btn-green" onclick="sendFullDebrief()">Full debrief</button>
+  </div>
+</div>
+
+<script>
+const AGENTS = [
+  {name:"Sarah Connelly",broker:"Keller Williams Portland",type:"independent",av:"SC",avClass:"av-green",gender:"female",years:5,deals:"~18/yr",pain:"no leads from brokerage"},
+  {name:"Marcus Webb",broker:"RE/MAX Equity Group",type:"independent",av:"MW",avClass:"av-blue",gender:"male",years:9,deals:"~28/yr",pain:"high monthly fees eating into income"},
+  {name:"Danielle Torres",broker:"Windermere Real Estate",type:"team",av:"DT",avClass:"av-teal",gender:"female",years:3,deals:"~12/yr",pain:"team split ceiling limiting growth"},
+  {name:"Jake Prentiss",broker:"Coldwell Banker",type:"team",av:"JP",avClass:"av-dark",gender:"male",years:6,deals:"~20/yr",pain:"not building own brand on the team"},
+  {name:"Aisha Nwosu",broker:"eXp Realty",type:"independent",av:"AN",avClass:"av-gray",gender:"female",years:2,deals:"~8/yr",pain:"lacks structure and real coaching"},
+  {name:"Tyler Hames",broker:"Premiere Property Group",type:"new",av:"TH",avClass:"av-green",gender:"male",years:0,deals:"0 closings yet",pain:"no real onboarding or mentorship"},
+  {name:"Lisa Kwan",broker:"John L Scott Real Estate",type:"team",av:"LK",avClass:"av-blue",gender:"female",years:7,deals:"~22/yr",pain:"wants more autonomy and control"},
+  {name:"Derek Simmons",broker:"Cascade Hasson Sothebys",type:"independent",av:"DS",avClass:"av-teal",gender:"male",years:11,deals:"~35/yr",pain:"marketing support is lacking"},
+];
+
+const STAGES=["Intro","Ice breaker","Pitch","Discovery","Objections","Close"];
+const GOODBYE_WORDS=["goodbye","bye","talk soon","thanks for calling","have a good","gotta go","take care","we'll be in touch","sounds good talk","let me think about it and","i'll reach out","i'll call you"];
+
+let sess={agent:null,diff:"neutral",recruiterName:"",history:[],stage:0,transcript:[],ended:false,timerInt:null,seconds:0,recognition:null,synth:window.speechSynthesis,voices:[],isSpeaking:false,isListening:false};
+
+function pickAgent(type){
+  const pool=AGENTS.filter(a=>a.type===type);
+  return pool[Math.floor(Math.random()*pool.length)];
+}
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function startCall(){
+  const type=document.getElementById('sel-type').value;
+  const diff=document.getElementById('sel-diff').value;
+  const rName=document.getElementById('recruiter-name').value.trim()||"Recruiter";
+  const agent=pickAgent(type);
+  sess={agent,diff,recruiterName:rName,history:[],stage:0,transcript:[],ended:false,timerInt:null,seconds:0,recognition:null,synth:window.speechSynthesis,voices:[],isSpeaking:false,isListening:false};
+
+  const av=document.getElementById('call-avatar');
+  av.textContent=agent.av;
+  av.className='agent-avatar '+agent.avClass;
+  document.getElementById('call-name').textContent=agent.name;
+  document.getElementById('call-broker').textContent=agent.broker;
+  document.getElementById('call-detail').textContent=agent.type.charAt(0).toUpperCase()+agent.type.slice(1)+' · '+agent.deals;
+  document.getElementById('agent-speaking-name').textContent=agent.name+' is speaking...';
+
+  updateStage(0);
+  showScreen('call');
+  startTimer();
+  loadVoices(()=>{ agentOpener(); });
+}
+
+function startTimer(){
+  sess.timerInt=setInterval(()=>{
+    sess.seconds++;
+    const m=Math.floor(sess.seconds/60);
+    const s=sess.seconds%60;
+    document.getElementById('call-timer').textContent=m+':'+(s<10?'0':'')+s;
+  },1000);
+}
+
+function loadVoices(cb){
+  const load=()=>{sess.voices=sess.synth.getVoices();if(sess.voices.length>0)cb();};
+  if(sess.synth.getVoices().length>0){sess.voices=sess.synth.getVoices();cb();}
+  else{sess.synth.onvoiceschanged=load;}
+}
+
+function pickVoice(gender){
+  const voices=sess.voices;
+  const femaleKeywords=['female','woman','zira','samantha','victoria','karen','moira','fiona','tessa','veena','allison','ava','susan'];
+  const maleKeywords=['male','man','david','mark','daniel','alex','fred','jorge','diego','luca'];
+  const kw=gender==='female'?femaleKeywords:maleKeywords;
+  for(const v of voices){
+    const n=v.name.toLowerCase();
+    if(kw.some(k=>n.includes(k)))return v;
+  }
+  const enVoices=voices.filter(v=>v.lang.startsWith('en'));
+  if(gender==='female'&&enVoices.length>1)return enVoices[1];
+  return enVoices[0]||voices[0];
+}
+
+function speak(text,onEnd){
+  if(!text)return;
+  sess.synth.cancel();
+  setTimeout(()=>{
+    const utt=new SpeechSynthesisUtterance(text);
+    utt.voice=pickVoice(sess.agent.gender);
+    utt.rate=0.9;
+    utt.pitch=sess.agent.gender==='female'?1.1:0.9;
+    utt.volume=1;
+    sess.isSpeaking=true;
+    setMicState('speaking');
+    document.getElementById('speaking-anim').style.display='block';
+    let done=false;
+    const doneSpeaking=()=>{
+      if(done)return;
+      done=true;
+      clearTimeout(fallbackTimer);
+      clearInterval(keepAlive);
+      sess.isSpeaking=false;
+      document.getElementById('speaking-anim').style.display='none';
+      if(onEnd)onEnd();
+      if(!sess.ended)setTimeout(()=>startListening(),700);
+    };
+    const wordCount=text.split(' ').length;
+    const estimatedMs=Math.max((wordCount/130)*60000+2000,3000);
+    const fallbackTimer=setTimeout(doneSpeaking,estimatedMs);
+    const keepAlive=setInterval(()=>{
+      if(!sess.synth.speaking){clearInterval(keepAlive);}
+      else{sess.synth.pause();sess.synth.resume();}
+    },10000);
+    utt.onend=doneSpeaking;
+    utt.onerror=doneSpeaking;
+    sess.synth.speak(utt);
+  },300);
+}
+
+function agentOpener(){
+  const a=sess.agent;
+  const d=sess.diff;
+  const warm=[
+    "Hey, good timing — I was just thinking about making some changes. What's this about?",
+    "Sure, I've got a few minutes. I've actually heard of Matin Real Estate. What can you tell me?",
+    "Good morning! Yeah, I'm open to a chat. Go ahead.",
+  ];
+  const neutral=[
+    "Hi there. Sure, I can chat briefly. What's this about exactly?",
+    "Hey. I'm pretty busy but I've got a couple minutes. What are you offering?",
+    "Oh, Matin Real Estate — I've seen your signs around. Go ahead.",
+  ];
+  const cold=[
+    "I get these calls a lot. I'll give you about sixty seconds.",
+    "Look, I'm pretty happy where I am. What makes you think I'd want to move?",
+    "I've been with "+a.broker+" for years and I'm not really looking. But go ahead.",
+  ];
+  const pool=d==='warm'?warm:d==='cold'?cold:neutral;
+  const line=pool[Math.floor(Math.random()*pool.length)];
+  document.getElementById('live-agent').textContent=line;
+  document.getElementById('call-status-label').textContent='In call';
+  sess.history.push({role:'assistant',content:line});
+  sess.transcript.push({role:'agent',name:a.name,text:line});
+  speak(line);
+}
+
+function setMicState(state){
+  const ring=document.getElementById('mic-ring');
+  const status=document.getElementById('voice-status');
+  const hint=document.getElementById('voice-hint');
+  ring.className='mic-ring '+state;
+  if(state==='listening'){
+    status.textContent='Listening...';
+    hint.textContent='Speak your response — pause when done';
+  } else if(state==='speaking'){
+    status.textContent=sess.agent.name+' is speaking...';
+    hint.textContent='Agent is responding';
+  } else if(state==='processing'){
+    status.textContent='Processing...';
+    hint.textContent='Getting agent response';
+  } else {
+    status.textContent='Initializing...';
+  }
+}
+
+function updateStage(idx){
+  sess.stage=idx;
+  for(let i=0;i<6;i++){
+    const d=document.getElementById('sd'+i);
+    d.className='stage-dot'+(i<idx?' done':i===idx?' active':'');
+  }
+  document.getElementById('stage-name-display').textContent=STAGES[idx]||'Wrap-up';
+}
+
+function startListening(){
+  if(sess.ended||sess.isSpeaking)return;
+  if(!('webkitSpeechRecognition' in window||'SpeechRecognition' in window)){
+    document.getElementById('voice-status').textContent='Speech recognition not supported in this browser.';
+    return;
+  }
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(sess.recognition){try{sess.recognition.stop();}catch(e){}}
+  const rec=new SR();
+  sess.recognition=rec;
+  rec.continuous=false;
+  rec.interimResults=true;
+  rec.lang='en-US';
+  rec.maxAlternatives=1;
+
+  setMicState('listening');
+  sess.isListening=true;
+
+  rec.onresult=(e)=>{
+    let interim='';
+    let final='';
+    for(let i=e.resultIndex;i<e.results.length;i++){
+      if(e.results[i].isFinal)final+=e.results[i][0].transcript;
+      else interim+=e.results[i][0].transcript;
+    }
+    document.getElementById('live-you').textContent=final||interim;
+    if(final){
+      rec.stop();
+      handleRecruiterSpeech(final.trim());
+    }
+  };
+  rec.onerror=(e)=>{
+    if(e.error!=='no-speech'&&e.error!=='aborted'){
+      document.getElementById('voice-status').textContent='Mic error: '+e.error+'. Please refresh.';
+    }
+  };
+  rec.onend=()=>{
+    sess.isListening=false;
+    if(!sess.ended&&!sess.isSpeaking){
+      setTimeout(()=>{ if(!sess.ended&&!sess.isSpeaking)startListening(); },400);
+    }
+  };
+  try{rec.start();}catch(e){}
+}
+
+function handleRecruiterSpeech(text){
+  if(!text||sess.ended)return;
+  sess.transcript.push({role:'recruiter',name:sess.recruiterName,text});
+  sess.history.push({role:'user',content:text});
+  document.getElementById('live-you').textContent=text;
+
+  const lower=text.toLowerCase();
+  if(GOODBYE_WORDS.some(w=>lower.includes(w))){
+    endCall("goodbye detected");
+    return;
+  }
+
+  const stage=detectStageAdvance(lower);
+  if(stage&&sess.stage<5)updateStage(sess.stage+1);
+
+  setMicState('processing');
+  getAgentResponse(text);
+}
+
+function detectStageAdvance(t){
+  if(sess.stage===0&&(t.includes('matin')||t.includes('calling')||t.includes('reaching out')||t.includes('my name')))return true;
+  if(sess.stage===1&&(t.includes('how long')||t.includes('how are')||t.includes('what do you')||t.includes('tell me about')))return true;
+  if(sess.stage===2&&(t.includes('leads')||t.includes('support')||t.includes('60,000')||t.includes('150 million')||t.includes('team')))return true;
+  if(sess.stage===3&&(t.includes('goals')||t.includes('bottleneck')||t.includes('pipeline')||t.includes('where do you')||t.includes('how much')))return true;
+  if(sess.stage===4&&(t.includes("not asking")||t.includes("informed decision")||t.includes("understand your")||t.includes("makes sense")))return true;
+  return false;
+}
+
+async function getAgentResponse(userText){
+  const a=sess.agent;
+  const diffMap={warm:"receptive and open to change",neutral:"cautiously curious but guarded",cold:"skeptical and resistant"};
+  const sys=`You are ${a.name}, a real estate agent at ${a.broker}. You have ${a.years} years experience and close ${a.deals}. Your biggest frustration is: ${a.pain}.
+
+You are ${diffMap[sess.diff]} to being recruited by Matin Real Estate. You are on a phone call RIGHT NOW.
+
+Current call stage: ${STAGES[sess.stage]}
+
+Rules:
+- Respond in 1-3 short natural sentences, like a real phone call
+- Use casual spoken language — no lists, no bullet points
+- Raise realistic objections naturally when appropriate (splits, fees, timing, loyalty to current broker)
+- If the recruiter mentions "goodbye" or "bye" or tries to close the call, respond naturally to close
+- If the recruiter has done a great job and convinced you, include the exact token [[AGREED]] somewhere
+- Do NOT break character. Do NOT give feedback. Just be the agent on the phone.`;
+
+  try{
+    const res=await fetch('/api/chat',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-6',
+        max_tokens:300,
+        system:sys,
+        messages:sess.history.slice(-10)
+      })
+    });
+    const data=await res.json();
+    let reply=data.content?.[0]?.text||"Can you say that again?";
+    const agreed=reply.includes('[[AGREED]]');
+    reply=reply.replace('[[AGREED]]','').trim();
+
+    document.getElementById('live-agent').textContent=reply;
+    sess.transcript.push({role:'agent',name:a.name,text:reply});
+    sess.history.push({role:'assistant',content:reply});
+
+    if(agreed){
+      speak(reply,()=>{ setTimeout(()=>endCall("agent agreed to meet"),800); });
+    } else {
+      const lower=reply.toLowerCase();
+      if(GOODBYE_WORDS.some(w=>lower.includes(w))){
+        speak(reply,()=>{ setTimeout(()=>endCall("call concluded"),800); });
+      } else {
+        speak(reply);
+      }
+    }
+  }catch(e){
+    const fallback="Sorry, I lost you there — can you say that again?";
+    document.getElementById('live-agent').textContent=fallback;
+    sess.transcript.push({role:'agent',name:sess.agent.name,text:fallback});
+    speak(fallback);
+  }
+}
+
+function endCallManual(){
+  endCall("manual end");
+}
+
+function endCall(reason){
+  if(sess.ended)return;
+  sess.ended=true;
+  if(sess.timerInt)clearInterval(sess.timerInt);
+  if(sess.recognition)try{sess.recognition.stop();}catch(e){}
+  sess.synth.cancel();
+  sess.isListening=false;
+  sess.isSpeaking=false;
+  document.getElementById('call-status-label').textContent='Call ended';
+  setTimeout(()=>buildTranscriptScreen(),600);
+}
+
+function buildTranscriptScreen(){
+  const a=sess.agent;
+  const m=Math.floor(sess.seconds/60);
+  const s=sess.seconds%60;
+  document.getElementById('ts-meta').textContent=a.name+' · '+a.broker+' · Duration: '+m+'m '+(s<10?'0':'')+s+'s';
+  const box=document.getElementById('transcript-box');
+  box.innerHTML='';
+  sess.transcript.forEach(t=>{
+    const div=document.createElement('div');
+    div.className='t-msg';
+    div.innerHTML='<div class="t-role '+t.role+'">'+t.name+'</div><div class="t-text">'+escHtml(t.text)+'</div>';
+    box.appendChild(div);
+  });
+  showScreen('transcript');
+}
+
+function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+async function showFeedbackScreen(){
+  const loadingEl=document.createElement('div');
+  loadingEl.style.cssText='text-align:center;padding:40px;font-size:14px;color:#666;';
+  loadingEl.textContent='Analyzing your call...';
+  document.getElementById('screen-feedback').querySelector('.fb-body').innerHTML='';
+  document.getElementById('screen-feedback').querySelector('.fb-body').appendChild(loadingEl);
+  showScreen('feedback');
+
+  const a=sess.agent;
+  const m=Math.floor(sess.seconds/60);
+  const s2=sess.seconds%60;
+  document.getElementById('fb-meta').textContent=a.name+' · '+a.broker+' · '+m+'m '+(s2<10?'0':'')+s2+'s';
+
+  const convo=sess.transcript.map(t=>t.name.toUpperCase()+': '+t.text).join('\n');
+
+  try{
+    const res=await fetch('/api/chat',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-6',
+        max_tokens:1000,
+        system:'You are a recruiting coach for Matin Real Estate. Analyze recruiter performance using the RISE model. Return ONLY valid JSON, no markdown.',
+        messages:[{role:'user',content:`Analyze this recruiting call. Return ONLY this exact JSON:
+{"R":{"text":"2 sentences on what the recruiter did well"},"I":{"text":"2 sentences on what needs improvement"},"S":{"text":"2 sentences with a specific alternative phrase or tactic to try next time"},"E":{"text":"1 motivating sentence about their progress"},"scores":{"rapport":75,"discovery":60,"objections":55,"close":40},"stage_reached":"${STAGES[sess.stage]}"}
+
+Call transcript:
+${convo}`}]
+      })
+    });
+    const data=await res.json();
+    let raw=data.content?.[0]?.text||'{}';
+    raw=raw.replace(/```json|```/g,'').trim();
+    const fb=JSON.parse(raw);
+    renderFeedback(fb);
+    speakFeedback(fb);
+  }catch(e){
+    renderFeedback({
+      R:{text:"You opened the call professionally and identified yourself with Matin Real Estate clearly."},
+      I:{text:"Focus on asking more discovery questions before presenting features. Let the agent's pain guide your pitch."},
+      S:{text:"Try asking: 'What would need to change for you to double your production this year?' Then tie Matin's offer directly to their answer."},
+      E:{text:"You're developing the right instincts — every call sharpens your skills."},
+      scores:{rapport:65,discovery:50,objections:45,close:35},
+      stage_reached:STAGES[sess.stage]
+    });
+  }
+}
+
+function renderFeedback(fb){
+  const body=document.getElementById('screen-feedback').querySelector('.fb-body');
+  const items=[
+    {key:'R',label:'Recognized',sub:'What you did well',cls:'rb-r'},
+    {key:'I',label:'Improved',sub:'What to sharpen',cls:'rb-i'},
+    {key:'S',label:'Suggested',sub:'Try this next time',cls:'rb-s'},
+    {key:'E',label:'Encouraged',sub:'Keep going',cls:'rb-e'},
+  ];
+  let html='<div id="rise-content">';
+  items.forEach(it=>{
+    html+=`<div class="rise-item"><div class="rise-badge ${it.cls}">${it.key}<br><span style="font-size:9px;font-weight:400">${it.sub}</span></div><div class="rise-text">${escHtml(fb[it.key]?.text||'')}</div></div>`;
+  });
+  html+='</div><div class="score-grid" id="score-grid">';
+  const scores=fb.scores||{};
+  [['Rapport',scores.rapport],['Discovery',scores.discovery],['Objections',scores.objections],['Close',scores.close]].forEach(([l,v])=>{
+    html+=`<div class="score-card"><div class="score-num">${Math.round(v||50)}</div><div class="score-lbl">${l}</div></div>`;
+  });
+  html+='</div>';
+  if(fb.stage_reached)html+=`<div style="font-size:12px;color:#999;margin-top:8px;">Stage reached: ${escHtml(fb.stage_reached)}</div>`;
+  body.innerHTML=html;
+  body.innerHTML+=`<div class="actions-row" style="margin-top:20px;">
+    <button class="btn-primary" style="flex:1;" onclick="resetToSetup()">New call</button>
+    <button class="btn-secondary" onclick="showTranscriptFromFeedback()">Back to transcript</button>
+    <button class="btn-green" onclick="sendFullDebrief()">Full debrief</button>
+  </div>`;
+}
+
+function speakFeedback(fb){
+  const text=`Here is your RISE feedback. Recognized: ${fb.R?.text} Improved: ${fb.I?.text} Suggested: ${fb.S?.text} Encouraged: ${fb.E?.text}`;
+  const utt=new SpeechSynthesisUtterance(text);
+  const voices=sess.synth.getVoices();
+  const coach=voices.find(v=>v.name.toLowerCase().includes('samantha')||v.name.toLowerCase().includes('karen')||v.name.toLowerCase().includes('victoria'))||voices.find(v=>v.lang.startsWith('en'))||voices[0];
+  if(coach)utt.voice=coach;
+  utt.rate=0.92;
+  utt.pitch=1.0;
+  sess.synth.cancel();
+  sess.synth.speak(utt);
+}
+
+function showTranscriptFromFeedback(){
+  sess.synth.cancel();
+  showScreen('transcript');
+}
+
+function resetToSetup(){
+  sess.synth.cancel();
+  if(sess.recognition)try{sess.recognition.stop();}catch(e){}
+  if(sess.timerInt)clearInterval(sess.timerInt);
+  showScreen('setup');
+}
+
+function sendFullDebrief(){
+  const a=sess.agent;
+  const convo=sess.transcript.map(t=>t.name.toUpperCase()+': '+t.text).join('\n');
+  window.parent.postMessage({type:'claude-send-prompt',text:`Please give me a full debrief on my recruiting call with ${a.name} from ${a.broker}. Here is the full transcript:\n\n${convo}\n\nPlease score each stage (Intro, Ice Breaker, Pitch, Discovery, Objections, Close), identify specific moments where I excelled or missed opportunities, and give me actionable coaching tips using the RISE model for my next call.`},'*');
+}
+</script>
+</body>
+</html>

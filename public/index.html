@@ -357,7 +357,7 @@ function speak(text,onEnd){
       sess.isSpeaking=false;
       document.getElementById('speaking-anim').style.display='none';
       if(onEnd)onEnd();
-      if(!sess.ended)setTimeout(()=>startListening(),700);
+      if(!sess.ended)setTimeout(()=>startListening(),1200);
     };
     const wordCount=text.split(' ').length;
     const estimatedMs=Math.max((wordCount/130)*60000+2000,3000);
@@ -427,6 +427,9 @@ function updateStage(idx){
   document.getElementById('stage-name-display').textContent=STAGES[idx]||'Wrap-up';
 }
 
+let silenceTimer=null;
+let restartTimer=null;
+
 function startListening(){
   if(sess.ended||sess.isSpeaking)return;
   if(!('webkitSpeechRecognition' in window||'SpeechRecognition' in window)){
@@ -434,42 +437,99 @@ function startListening(){
     return;
   }
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(sess.recognition){try{sess.recognition.stop();}catch(e){}}
+  if(sess.recognition){try{sess.recognition.abort();}catch(e){}}
+  clearTimeout(silenceTimer);
+  clearTimeout(restartTimer);
+
   const rec=new SR();
   sess.recognition=rec;
-  rec.continuous=false;
+  rec.continuous=true;
   rec.interimResults=true;
   rec.lang='en-US';
   rec.maxAlternatives=1;
 
   setMicState('listening');
   sess.isListening=true;
+  let finalTranscript='';
+  let interimTranscript='';
+  let lastSpeechTime=Date.now();
+  let hasSpoken=false;
 
   rec.onresult=(e)=>{
-    let interim='';
-    let final='';
+    if(sess.isSpeaking){return;}
+    interimTranscript='';
     for(let i=e.resultIndex;i<e.results.length;i++){
-      if(e.results[i].isFinal)final+=e.results[i][0].transcript;
-      else interim+=e.results[i][0].transcript;
+      if(e.results[i].isFinal){
+        finalTranscript+=e.results[i][0].transcript+' ';
+        hasSpoken=true;
+        lastSpeechTime=Date.now();
+      } else {
+        interimTranscript+=e.results[i][0].transcript;
+        lastSpeechTime=Date.now();
+        hasSpoken=true;
+      }
     }
-    document.getElementById('live-you').textContent=final||interim;
-    if(final){
-      rec.stop();
-      handleRecruiterSpeech(final.trim());
+    document.getElementById('live-you').textContent=(finalTranscript+interimTranscript).trim();
+    clearTimeout(silenceTimer);
+    if(hasSpoken){
+      silenceTimer=setTimeout(()=>{
+        const text=(finalTranscript+interimTranscript).trim();
+        if(text&&!sess.isSpeaking&&!sess.ended){
+          try{rec.abort();}catch(e){}
+          sess.isListening=false;
+          handleRecruiterSpeech(text);
+          finalTranscript='';
+          interimTranscript='';
+          hasSpoken=false;
+        }
+      },2000);
     }
   };
+
   rec.onerror=(e)=>{
-    if(e.error!=='no-speech'&&e.error!=='aborted'){
-      document.getElementById('voice-status').textContent='Mic error: '+e.error+'. Please refresh.';
+    if(e.error==='aborted')return;
+    if(e.error==='no-speech'){
+      if(!sess.ended&&!sess.isSpeaking){
+        try{rec.abort();}catch(err){}
+        restartTimer=setTimeout(()=>startListening(),500);
+      }
+      return;
+    }
+    console.warn('Mic error:',e.error);
+    if(!sess.ended&&!sess.isSpeaking){
+      restartTimer=setTimeout(()=>startListening(),1000);
     }
   };
+
   rec.onend=()=>{
     sess.isListening=false;
     if(!sess.ended&&!sess.isSpeaking){
-      setTimeout(()=>{ if(!sess.ended&&!sess.isSpeaking)startListening(); },400);
+      const text=finalTranscript.trim();
+      if(text){
+        handleRecruiterSpeech(text);
+        finalTranscript='';
+      } else {
+        restartTimer=setTimeout(()=>{
+          if(!sess.ended&&!sess.isSpeaking)startListening();
+        },500);
+      }
     }
   };
-  try{rec.start();}catch(e){}
+
+  try{rec.start();}catch(e){
+    restartTimer=setTimeout(()=>startListening(),1000);
+  }
+
+  // Auto-restart every 55 seconds to prevent Chrome timeout
+  sess.micRestartInterval=setInterval(()=>{
+    if(!sess.ended&&!sess.isSpeaking&&sess.isListening){
+      const text=finalTranscript.trim();
+      if(!text){
+        try{rec.abort();}catch(e){}
+        clearTimeout(silenceTimer);
+      }
+    }
+  },55000);
 }
 
 function handleRecruiterSpeech(text){
@@ -563,7 +623,10 @@ function endCall(reason){
   if(sess.ended)return;
   sess.ended=true;
   if(sess.timerInt)clearInterval(sess.timerInt);
-  if(sess.recognition)try{sess.recognition.stop();}catch(e){}
+  if(sess.micRestartInterval)clearInterval(sess.micRestartInterval);
+  clearTimeout(silenceTimer);
+  clearTimeout(restartTimer);
+  if(sess.recognition)try{sess.recognition.abort();}catch(e){}
   sess.synth.cancel();
   sess.isListening=false;
   sess.isSpeaking=false;
